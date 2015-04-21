@@ -1,0 +1,16 @@
+/*   
+Theme Name: Base Theme HTML5
+Theme URI: http://www.pixelkit.cl/
+Description: Template to start construction on html5 - with normalizr, no styles.
+Author: Pixelkit
+Author URI: http://pixelkit.cl
+Version: 2.0
+.
+
+.
+*/
+
+/* +++ Content +++ */
+@import url(css/normalize.css);
+@import url(css/styles.css);
+@import url(css/styles-responsive.css);

@@ -1,0 +1,38 @@
+@media screen and (min-width: 1001px) {
+	.menu-header{
+		display: block !important;
+	}
+	#sidebar{
+		display: block;
+	}
+}
+
+@media screen and (max-width: 900px) {
+	
+	/* RESPONSIVE MENU BUTTON */
+	#mobile-menu {
+		cursor: pointer;
+		padding: 18px;
+		font-size: 25px;
+		display: block;
+		visibility: visible;
+		float: left;
+	}
+	.menu-header{
+		display: none;
+		border: none;
+		clear: both;
+		width: 100%;
+	}
+
+
+
+}
+
+@media screen and (max-width: 500px) {
+
+
+
+}
+
+
