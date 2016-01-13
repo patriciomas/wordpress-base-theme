@@ -24,16 +24,17 @@
 
 	// Add a page number if necessary:
 	if ( $paged >= 2 || $page >= 2 )
-		echo ' | ' . sprintf( __( 'Page %s', 'pixelkit' ), max( $paged, $page ) );
+		echo ' | ' . sprintf( __( 'Page %s' ), max( $paged, $page ) );
 
 	?></title>
 
 <!-- Estilos -->
+<link href="<?php bloginfo('template_url'); ?>/css/bootstrap-3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="screen,projection" />
 <link href="<?php bloginfo('stylesheet_url'); ?>" rel="stylesheet" type="text/css" media="screen,projection" />
 
 <!-- Fonts -->
-<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700|Gruppo' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" href="<?php bloginfo('template_url'); ?>/css/font-awesome-4.3.0/css/font-awesome.min.css">
+<link href='https://fonts.googleapis.com/css?family=Raleway:300,500|Open+Sans:300,400,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="<?php bloginfo('template_url'); ?>/css/font-awesome-4.5.0/css/font-awesome.min.css">
 
 <!-- Favicon -->
 <link rel="icon" href="<?php bloginfo('template_url'); ?>/css/images/favicon.ico" type="image/x-icon" />
@@ -43,26 +44,9 @@
 
 <?php wp_head(); ?>
 
-<!--  Bootstrap  -->
-<!-- Latest compiled and minified JavaScript -->
-<script src="<?php bloginfo('template_url'); ?>/css/bootstrap-3.2.0/js/bootstrap.min.js"></script>
-
-<!-- Scripts -->
-<script type="text/javascript">
-  jQuery(document).ready(function($) {
-
-	/* toggle nav */
-	$("#mobile-menu").on("click", function(){
-		$(".menu-header").slideToggle();
-		$(this).toggleClass("active");
-	});
-
-  });
-</script>
-
 </head>
 
-<!-- Send your website’s header before sending the rest of the content. By using the flush function, the browser has time to download all the stylesheets referenced in the header while waiting for the other parts of the web page. -->
+<!-- Send your websiteï¿½s header before sending the rest of the content. By using the flush function, the browser has time to download all the stylesheets referenced in the header while waiting for the other parts of the web page. -->
 <?php flush(); ?>
 
 <body <?php body_class($class); ?>>
@@ -70,16 +54,10 @@
 <div id="container">
 
     <header id="header">
-        <h1><a href="<?php bloginfo('url'); ?>" title="Inicio"><?php bloginfo( 'name' ); ?></a></h1>
-        <p><?php bloginfo( 'description' ); ?></p>
+    <h1><a href="<?php bloginfo('url'); ?>" title="Inicio"><?php bloginfo( 'name' ); ?></a></h1>
+    <p><?php bloginfo( 'description' ); ?></p>
 
-		<div id="searchfield">
-			<?php $search_text = "Buscar..."; ?>
-			<form method="get" id="searchform" action="<?php bloginfo('home'); ?>/">
-			<input type="text" class="campo" value="Buscar..." name="s" id="s" class="searchbox" onblur="if (this.value == '') {this.value = 'Buscar...';}" onfocus="if (this.value == '<?php echo $search_text; ?>') {this.value = '';}" /> 
-			<input type="button" id="searchsubmit" class="boton" value="Buscar" />
-			</form>
-        </div>
+		<?php include (TEMPLATEPATH . '/searchform.php'); ?>
 
 		<ul class="social">
 		<?php if( get_theme_mod( 'url_facebook' ) != '') { ?>
@@ -95,11 +73,13 @@
 
         <div id="mobile-menu"><i class="fa fa-bars"></i></div>
         <?php wp_nav_menu(array('menu' => 'Main Menu', 'container' => 'nav', 'container_class' => 'menu-header')); ?>
-		
-		<?php if( !is_home() ) : ?>
+
+			<?php if( !is_home() ) : ?>
         <div id="breadcrumb">
             <?php the_breadcrumb(); ?>
         </div><!-- breadcrumb -->
-        <?php endif; ?>
+      <?php endif; ?>
 
     </header><!-- header -->
+
+		<main role="main" class="clearfix">

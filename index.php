@@ -1,12 +1,21 @@
 <?php get_header(); ?>
 
-	<main id="content">
-    	<div id="box-post">
-        	<h2>Noticia</h2>
-            <div class="box-text">
-            	<p>Este es el contenido</p>
-            </div>
-        </div>
-    </main><!-- content -->
+<div class="row">
+
+	<main id="content" class="col-sm-12 col-md-8">
+
+		<h2>Title</h2>
+
+		<div>
+			<p>Este es el contenido</p>
+		</div>
+
+	</main><!-- content -->
+
+	<div class="col-sm-12 col-md-4">
+		<?php include(TEMPLATEPATH."/sidebar.php");?>
+	</div>
+
+</div>
 
 <?php get_footer(); ?>

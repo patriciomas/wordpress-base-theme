@@ -1,25 +1,28 @@
 <?php get_header(); ?>
 
-	<main id="content">
-	
-	<?php if (have_posts()) : while (have_posts()) : the_post(); ?>
-	
-		<article class="post-body">
-			<h2><?php the_title(); ?></h2>
-			<div>
-				<?php the_content(); ?>
-			</div>
-		</article>
-	
-		<div class="post-navigation">
-			<div class="nav-previous"><?php previous_post_link( '%link', '<span class="meta-nav">&larr; Previa</span>' ); ?></div>
-			<div class="nav-next"><?php next_post_link( '%link', '<span class="meta-nav">Siguiente &rarr;</span>' ); ?></div>
-		</div><!-- #nav-above -->
+<div class="row">
 
-	<?php endwhile; endif; ?>
-	
-    </main><!-- content -->
+	<main id="content" class="col-sm-12 col-md-8">
 
-<?php include(TEMPLATEPATH."/sidebar.php");?>
+		<?php if (have_posts()) : while (have_posts()) : the_post(); ?>
+
+			<article class="post-body">
+				<h1><?php the_title(); ?></h1>
+				<div>
+					<?php the_content(); ?>
+				</div>
+			</article>
+
+		<?php include(TEMPLATEPATH."/pagination.php");?>
+
+		<?php endwhile; endif; ?>
+
+	</main><!-- content -->
+
+	<div class="col-sm-12 col-md-4">
+		<?php include(TEMPLATEPATH."/sidebar.php");?>
+	</div>
+
+</div>
 
 <?php get_footer(); ?>
