@@ -74,11 +74,9 @@
         <div id="mobile-menu"><i class="fa fa-bars"></i></div>
         <?php wp_nav_menu(array('menu' => 'Main Menu', 'container' => 'nav', 'container_class' => 'menu-header')); ?>
 
-			<?php if( !is_home() ) : ?>
-        <div id="breadcrumb">
-            <?php the_breadcrumb(); ?>
-        </div><!-- breadcrumb -->
-      <?php endif; ?>
+      <div id="breadcrumb">
+          <?php the_breadcrumb(); ?>
+      </div><!-- breadcrumb -->
 
     </header><!-- header -->
 

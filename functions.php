@@ -20,7 +20,7 @@ add_filter('login_errors', create_function('$a', "return null;"));
 		));
     };
 
-/* Get category ID by name */	
+/* Get category ID by name */
 function get_category_id($cat_name){
 	$term = get_term_by('name', $cat_name, 'category');
 	return $term->term_id;
@@ -31,7 +31,7 @@ add_theme_support( 'post-thumbnails' );
 
 /* Custom Menu */
 add_action('init', 'register_custom_menu');
- 
+
 function register_custom_menu() {
 register_nav_menu('main_menu', __('Main Menu'));
 }
@@ -43,109 +43,134 @@ function add_first_and_last($output) {
 }
 add_filter('wp_nav_menu', 'add_first_and_last');
 
-// Insertar Breadcrumb
-function the_breadcrumb() {
- 
-  $delimiter = '&raquo;';
-  $name = 'Inicio'; //text for the 'Home' link
-  $currentBefore = '<span class="current">';
-  $currentAfter = '</span>';
- 
-  if ( !is_home() && !is_front_page() || is_paged() ) {
- 
-    echo '<div>';
- 
-    global $post;
-    $home = get_bloginfo('url');
-    echo '<a href="' . $home . '">' . $name . '</a> ' . $delimiter . ' ';
- 
-    if ( is_category() ) {
-      global $wp_query;
-      $cat_obj = $wp_query->get_queried_object();
-      $thisCat = $cat_obj->term_id;
-      $thisCat = get_category($thisCat);
-      $parentCat = get_category($thisCat->parent);
-      if ($thisCat->parent != 0) echo(get_category_parents($parentCat, TRUE, ' ' . $delimiter . ' '));
-      echo $currentBefore . '';
-      single_cat_title();
-      echo '' . $currentAfter;
- 
-    } elseif ( is_day() ) {
-      echo '<a href="' . get_year_link(get_the_time('Y')) . '">' . get_the_time('Y') . '</a> ' . $delimiter . ' ';
-      echo '<a href="' . get_month_link(get_the_time('Y'),get_the_time('m')) . '">' . get_the_time('F') . '</a> ' . $delimiter . ' ';
-      echo $currentBefore . get_the_time('d') . $currentAfter;
- 
-    } elseif ( is_month() ) {
-      echo '<a href="' . get_year_link(get_the_time('Y')) . '">' . get_the_time('Y') . '</a> ' . $delimiter . ' ';
-      echo $currentBefore . get_the_time('F') . $currentAfter;
- 
-    } elseif ( is_year() ) {
-      echo $currentBefore . get_the_time('Y') . $currentAfter;
- 
-    } elseif ( is_single() ) {
-      $cat = get_the_category(); $cat = $cat[0];
-      echo get_category_parents($cat, TRUE, ' ' . $delimiter . ' ');
-      echo $currentBefore;
-      the_title();
-      echo $currentAfter;
- 
-    } elseif ( is_page() && !$post->post_parent ) {
-      echo $currentBefore;
-      the_title();
-      echo $currentAfter;
- 
-    } elseif ( is_page() && $post->post_parent ) {
-      $parent_id  = $post->post_parent;
-      $breadcrumbs = array();
-      while ($parent_id) {
-        $page = get_page($parent_id);
-        $breadcrumbs[] = '<a href="' . get_permalink($page->ID) . '">' . get_the_title($page->ID) . '</a>';
-        $parent_id  = $page->post_parent;
-      }
-      $breadcrumbs = array_reverse($breadcrumbs);
-      foreach ($breadcrumbs as $crumb) echo $crumb . ' ' . $delimiter . ' ';
-      echo $currentBefore;
-      the_title();
-      echo $currentAfter;
- 
-    } elseif ( is_search() ) {
-      echo $currentBefore . 'Resultados de &#39;' . get_search_query() . '&#39;' . $currentAfter;
- 
-    } elseif ( is_tag() ) {
-      echo $currentBefore . 'Art&iacute;culos etiquetados con &#39;';
-      single_tag_title();
-      echo '&#39;' . $currentAfter;
- 
-    } elseif ( is_author() ) {
-       global $author;
-      $userdata = get_userdata($author);
-      echo $currentBefore . 'Art&iacute;culos publicados por ' . $userdata->display_name . $currentAfter;
- 
-    } elseif ( is_404() ) {
-      echo $currentBefore . 'P&aacute;gina no encontrada' . $currentAfter;
-    }
- 
-    if ( get_query_var('paged') ) {
-      if ( is_category() || is_day() || is_month() || is_year() || is_search() || is_tag() || is_author() ) echo ' (';
-      echo __('Page') . ' ' . get_query_var('paged');
-      if ( is_category() || is_day() || is_month() || is_year() || is_search() || is_tag() || is_author() ) echo ')';
-    }
- 
-    echo '</div>';
- 
-  }
-}
 
-// fin breadcrumb
+/* Dimox Breadcrumbs * http://dimox.net/wordpress-breadcrumbs-without-a-plugin/ */
+function the_breadcrumb(){
+  /* === OPTIONS === */
+	$text['home']     = __('Home'); // text for the 'Home' link
+	$text['category'] = __('Archive by Category "%s"'); // text for a category page
+	$text['tax'] 	  = __('Archive for "%s"'); // text for a taxonomy page
+	$text['search']   = __('Search Results for "%s"'); // text for a search results page
+	$text['tag']      = __('Posts Tagged "%s"'); // text for a tag page
+	$text['author']   = __('Articles Posted by %s'); // text for an author page
+	$text['404']      = __('Error 404'); // text for the 404 page
+	$showCurrent = 1; // 1 - show current post/page title in breadcrumbs, 0 - don't show
+	$showOnHome  = 0; // 1 - show breadcrumbs on the homepage, 0 - don't show
+	$delimiter   = ' &raquo; '; // delimiter between crumbs
+	$before      = '<span class="current">'; // tag before the current crumb
+	$after       = '</span>'; // tag after the current crumb
+	/* === END OF OPTIONS === */
+	global $post;
+	$homeLink = get_bloginfo('url') . '/';
+	$linkBefore = '<span typeof="v:Breadcrumb">';
+	$linkAfter = '</span>';
+	$linkAttr = ' rel="v:url" property="v:title"';
+	$link = $linkBefore . '<a' . $linkAttr . ' href="%1$s">%2$s</a>' . $linkAfter;
+	if (is_home() || is_front_page()) {
+		if ($showOnHome == 1) echo '<div id="crumbs"><a href="' . $homeLink . '">' . $text['home'] . '</a></div>';
+	} else {
+		echo '<div id="crumbs">' . sprintf($link, $homeLink, $text['home']) . $delimiter;
 
-// Cortar número de palabras
+		if ( is_category() ) {
+			$thisCat = get_category(get_query_var('cat'), false);
+			if ($thisCat->parent != 0) {
+				$cats = get_category_parents($thisCat->parent, TRUE, $delimiter);
+				$cats = str_replace('<a', $linkBefore . '<a' . $linkAttr, $cats);
+				$cats = str_replace('</a>', '</a>' . $linkAfter, $cats);
+				echo $cats;
+			}
+			echo $before . sprintf($text['category'], single_cat_title('', false)) . $after;
+		} elseif( is_tax() ){
+			$thisCat = get_category(get_query_var('cat'), false);
+			if ($thisCat->parent != 0) {
+				$cats = get_category_parents($thisCat->parent, TRUE, $delimiter);
+				$cats = str_replace('<a', $linkBefore . '<a' . $linkAttr, $cats);
+				$cats = str_replace('</a>', '</a>' . $linkAfter, $cats);
+				echo $cats;
+			}
+			echo $before . sprintf($text['tax'], single_cat_title('', false)) . $after;
+
+		}elseif ( is_search() ) {
+			echo $before . sprintf($text['search'], get_search_query()) . $after;
+		} elseif ( is_day() ) {
+			echo sprintf($link, get_year_link(get_the_time('Y')), get_the_time('Y')) . $delimiter;
+			echo sprintf($link, get_month_link(get_the_time('Y'),get_the_time('m')), get_the_time('F')) . $delimiter;
+			echo $before . get_the_time('d') . $after;
+		} elseif ( is_month() ) {
+			echo sprintf($link, get_year_link(get_the_time('Y')), get_the_time('Y')) . $delimiter;
+			echo $before . get_the_time('F') . $after;
+		} elseif ( is_year() ) {
+			echo $before . get_the_time('Y') . $after;
+		} elseif ( is_single() && !is_attachment() ) {
+			if ( get_post_type() != 'post' ) {
+				$post_type = get_post_type_object(get_post_type());
+				$slug = $post_type->rewrite;
+				printf($link, $homeLink . '/' . $slug['slug'] . '/', $post_type->labels->singular_name);
+				if ($showCurrent == 1) echo $delimiter . $before . get_the_title() . $after;
+			} else {
+				$cat = get_the_category(); $cat = $cat[0];
+				$cats = get_category_parents($cat, TRUE, $delimiter);
+				if ($showCurrent == 0) $cats = preg_replace("#^(.+)$delimiter$#", "$1", $cats);
+				$cats = str_replace('<a', $linkBefore . '<a' . $linkAttr, $cats);
+				$cats = str_replace('</a>', '</a>' . $linkAfter, $cats);
+				echo $cats;
+				if ($showCurrent == 1) echo $before . get_the_title() . $after;
+			}
+		} elseif ( !is_single() && !is_page() && get_post_type() != 'post' && !is_404() ) {
+			$post_type = get_post_type_object(get_post_type());
+			echo $before . $post_type->labels->singular_name . $after;
+		} elseif ( is_attachment() ) {
+			$parent = get_post($post->post_parent);
+			$cat = get_the_category($parent->ID); $cat = $cat[0];
+			$cats = get_category_parents($cat, TRUE, $delimiter);
+			$cats = str_replace('<a', $linkBefore . '<a' . $linkAttr, $cats);
+			$cats = str_replace('</a>', '</a>' . $linkAfter, $cats);
+			echo $cats;
+			printf($link, get_permalink($parent), $parent->post_title);
+			if ($showCurrent == 1) echo $delimiter . $before . get_the_title() . $after;
+		} elseif ( is_page() && !$post->post_parent ) {
+			if ($showCurrent == 1) echo $before . get_the_title() . $after;
+		} elseif ( is_page() && $post->post_parent ) {
+			$parent_id  = $post->post_parent;
+			$breadcrumbs = array();
+			while ($parent_id) {
+				$page = get_page($parent_id);
+				$breadcrumbs[] = sprintf($link, get_permalink($page->ID), get_the_title($page->ID));
+				$parent_id  = $page->post_parent;
+			}
+			$breadcrumbs = array_reverse($breadcrumbs);
+			for ($i = 0; $i < count($breadcrumbs); $i++) {
+				echo $breadcrumbs[$i];
+				if ($i != count($breadcrumbs)-1) echo $delimiter;
+			}
+			if ($showCurrent == 1) echo $delimiter . $before . get_the_title() . $after;
+		} elseif ( is_tag() ) {
+			echo $before . sprintf($text['tag'], single_tag_title('', false)) . $after;
+		} elseif ( is_author() ) {
+	 		global $author;
+			$userdata = get_userdata($author);
+			echo $before . sprintf($text['author'], $userdata->display_name) . $after;
+		} elseif ( is_404() ) {
+			echo $before . $text['404'] . $after;
+		}
+		if ( get_query_var('paged') ) {
+			if ( is_category() || is_day() || is_month() || is_year() || is_search() || is_tag() || is_author() ) echo ' (';
+			echo __('Page') . ' ' . get_query_var('paged');
+			if ( is_category() || is_day() || is_month() || is_year() || is_search() || is_tag() || is_author() ) echo ')';
+		}
+		echo '</div>';
+	}
+} // end dimox_breadcrumbs()
+
+
+// Cortar nï¿½mero de palabras
 function string_limit_words($string, $word_limit) {
 	$words = explode(' ', $string, ($word_limit + 1));
 	if(count($words) > $word_limit)
 	array_pop($words);
 	return implode(' ', $words);
 }
-// Cortar número de palabras
+// Cortar nï¿½mero de palabras
 
 /* +++ Custom Login Logo +++ */
 add_action('login_head', 'my_custom_login_logo');
@@ -173,7 +198,7 @@ function my_custom_logo() {
 
 /* +++ Funciones para el extracto +++ */
 
-// Para extender el máximo de 55 palabras
+// Para extender el mï¿½ximo de 55 palabras
 function pixelkit_excerpt_length($length) {
 	return 100;
 }
@@ -194,7 +219,7 @@ function pk_customizer( $wp_customize ) {
 
 	$wp_customize->remove_section('static_front_page');
 
-	// SECCIÓN OPCIONES GENERALES
+	// SECCIï¿½N OPCIONES GENERALES
     $wp_customize->add_section(
         'general_options',
         array(
@@ -251,7 +276,7 @@ function pk_customizer( $wp_customize ) {
 	    )
 	);
 
-	// SECCIÓN REDES SOCIALES
+	// SECCIï¿½N REDES SOCIALES
     $wp_customize->add_section(
         'social_options',
         array(
@@ -275,7 +300,7 @@ function pk_customizer( $wp_customize ) {
 	        'type' => 'text',
             'priority' => '1',
 	    )
-	);    
+	);
 	// TWITTER
 	$wp_customize->add_setting(
 	    'url_twitter',
@@ -309,7 +334,7 @@ function pk_customizer( $wp_customize ) {
 	    )
 	);
 
-	// SECCIÓN PORTADA
+	// SECCIï¿½N PORTADA
     $wp_customize->add_section(
         'homepage_options',
         array(
@@ -337,7 +362,7 @@ function pk_customizer( $wp_customize ) {
 	// TEXTO SERVICIOS
 	class Custom_Textarea_Control extends WP_Customize_Control {
 	    public $type = 'textarea';
-	 
+
 	    public function render_content() {
 	        ?>
 	        <label>
@@ -353,7 +378,7 @@ function pk_customizer( $wp_customize ) {
 	    	'default' => '',
 		)
 	);
-	 
+
 	$wp_customize->add_control(
 		new Custom_Textarea_Control(
 		$wp_customize, 'soluciones-parrafo',
