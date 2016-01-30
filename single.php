@@ -8,6 +8,7 @@
 
 			<article class="post-body">
 				<h1><?php the_title(); ?></h1>
+				<span class="info"><?php the_date('d/m/Y'); ?> | __('Por') <?php the_author(); ?></span>
 				<div>
 					<?php social_sharing_buttons(); ?>
 					<?php the_content(); ?>
