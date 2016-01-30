@@ -1,4 +1,4 @@
-@media screen and (min-width: 1001px) {
+@media screen and (max-width: 1200px) {
 	.menu-header{
 		display: block !important;
 	}
@@ -7,8 +7,8 @@
 	}
 }
 
-@media screen and (max-width: 900px) {
-	
+@media screen and (max-width: 992px) {
+
 	/* RESPONSIVE MENU BUTTON */
 	#mobile-menu {
 		cursor: pointer;
@@ -28,11 +28,13 @@
 
 
 }
+@media screen and (max-width: 768px) {
 
+
+
+}
 @media screen and (max-width: 500px) {
 
 
 
 }
-
-
