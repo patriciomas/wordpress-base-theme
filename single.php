@@ -9,6 +9,7 @@
 			<article class="post-body">
 				<h1><?php the_title(); ?></h1>
 				<div>
+					<?php social_sharing_buttons(); ?>
 					<?php the_content(); ?>
 				</div>
 			</article>

@@ -212,6 +212,50 @@ add_filter('wp_trim_excerpt', 'new_excerpt_more');
 /* +++ Funciones para el extracto +++ */
 
 
+// Social Sharing Buttons
+function social_sharing_buttons() {
+
+		// Get current page URL
+		$shareURL = get_permalink();
+
+		// Get current page title
+		$shareTitle = str_replace( ' ', '%20', get_the_title());
+
+		// Get Post Thumbnail for pinterest
+		$shareThumbnail = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'full' );
+
+		// Construct sharing URL without using any script
+		$twitterURL = 'https://twitter.com/intent/tweet?text='.$shareTitle.'&amp;url='.$shareURL.'&amp;via=Crunchify';
+		$facebookURL = 'https://www.facebook.com/sharer/sharer.php?u='.$shareURL;
+		$googleURL = 'https://plus.google.com/share?url='.$shareURL;
+		$pinterestURL = 'https://pinterest.com/pin/create/button/?url='.$shareURL.'&amp;media='.$shareThumbnail[0].'&amp;description='.$shareTitle;
+
+		// Add sharing button at the end of page/page content
+		$buttonsContent .= '<ul class="social-links">';
+		$buttonsContent .= '<li class="twitter"><a href="'. $twitterURL .'" target="_blank"><span class="fa-stack fa-lg">
+      <i class="fa fa-circle fa-stack-2x"></i>
+      <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+    </span></a></li>';
+		$buttonsContent .= '<li class="facebook"><a href="'.$facebookURL.'" target="_blank"><span class="fa-stack fa-lg">
+      <i class="fa fa-circle fa-stack-2x"></i>
+      <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+    </span></a></li>';
+		$buttonsContent .= '<li class="google-plus"><a href="'.$googleURL.'" target="_blank"><span class="fa-stack fa-lg">
+      <i class="fa fa-circle fa-stack-2x"></i>
+      <i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+    </span></a></li>';
+		$buttonsContent .= '<li class="pinterest"><a href="'.$pinterestURL.'" target="_blank"><span class="fa-stack fa-lg">
+      <i class="fa fa-circle fa-stack-2x"></i>
+      <i class="fa fa-pinterest fa-stack-1x fa-inverse"></i>
+    </span></a></li>';
+		$buttonsContent .= '</ul>';
+
+		echo $buttonsContent;
+
+};
+
+
+
 /**
  * Adds the individual sections, settings, and controls to the theme customizer
  */
