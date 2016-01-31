@@ -20,7 +20,8 @@
 <!-- You can start editing here. -->
 
 <?php if ($comments) : ?>
-	<h3 id="comments"><?php comments_number('No Responses', 'One Response', '% Responses' );?> to &#8220;<?php the_title(); ?>&#8221;</h3>
+	<div class="comments">
+	<h3><?php comments_number('¡Sea el primero en comentar!', 'Un comentario', '% comentarios' );?></h3>
 
 	<ol>
 
@@ -48,7 +49,9 @@
  <?php else : // this is displayed if there are no comments so far ?>
 
 	<?php if ('open' == $post->comment_status) : ?>
-		<!-- If comments are open, but there are no comments. -->
+
+		<div class="comments">
+		<h3><?php comments_number('¡Sea el primero en comentar!', 'Un comentario', '% comentarios' );?></h3>
 
 	 <?php else : // comments are closed ?>
 		<!-- If comments are closed. -->
@@ -59,36 +62,37 @@
 
 <?php if ('open' == $post->comment_status) : ?>
 
-<h3 id="respond">Leave a Reply</h3>
+<h3 id="respond">Deje su opini&oacute;n</h3>
 
 <?php if ( get_option('comment_registration') && !$user_ID ) : ?>
-<p>You must be <a href="<?php echo get_option('siteurl'); ?>/wp-login.php?redirect_to=<?php echo urlencode(get_permalink()); ?>">logged in</a> to post a comment.</p>
+<p>Debe <a href="<?php echo get_option('siteurl'); ?>/wp-login.php?redirect_to=<?php echo urlencode(get_permalink()); ?>">iniciar sesi&oacute;n</a> para comentar.</p>
 <?php else : ?>
 
 <form action="<?php echo get_option('siteurl'); ?>/wp-comments-post.php" method="post" id="commentform">
 
 <?php if ( $user_ID ) : ?>
 
-<p>Logged in as <a href="<?php echo get_option('siteurl'); ?>/wp-admin/profile.php"><?php echo $user_identity; ?></a>. <a href="<?php echo get_option('siteurl'); ?>/wp-login.php?action=logout" title="Log out of this account">Log out &raquo;</a></p>
+<p>Comentando como <a href="<?php echo get_option('siteurl'); ?>/wp-admin/profile.php"><?php echo $user_identity; ?></a>.<br />
+<a href="<?php echo get_option('siteurl'); ?>/wp-login.php?action=logout" title="Log out of this account">Cerrar sesi&oacute;n &raquo;</a></p>
 
 <?php else : ?>
 
 <input type="text" name="author" id="author" value="<?php echo $comment_author; ?>" size="22" tabindex="1" <?php if ($req) echo "aria-required='true'"; ?> />
-<label for="author">Name <?php if ($req) echo "(required)"; ?></label>
-
+<label for="author">Nombre <?php if ($req) echo "<span>*</span>"; ?></label>
+<br />
 <input type="text" name="email" id="email" value="<?php echo $comment_author_email; ?>" size="22" tabindex="2" <?php if ($req) echo "aria-required='true'"; ?> />
-<label for="email">Mail (will not be published) <?php if ($req) echo "(required)"; ?></label>
-
+<label for="email">Email (no se publicar&aacute;) <?php if ($req) echo "<span>*</span>"; ?></label>
+<br />
 <input type="text" name="url" id="url" value="<?php echo $comment_author_url; ?>" size="22" tabindex="3" />
-<label for="url">Website</label>
+<label for="url">Sitio web</label>
+<br />
 
 <?php endif; ?>
 
-<p><strong>XHTML:</strong> You can use these tags: <code><?php echo allowed_tags(); ?></code></p>
-
 <textarea name="comment" id="comment" cols="100%" rows="10" tabindex="4"></textarea>
+<br />
 
-<input name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment" />
+<input name="submit" type="submit" id="submit" tabindex="5" value="Publicar" />
 <input type="hidden" name="comment_post_ID" value="<?php echo $id; ?>" />
 <?php do_action('comment_form', $post->ID); ?>
 
@@ -97,3 +101,5 @@
 <?php endif; // If registration required and not logged in ?>
 
 <?php endif; // if you delete this the sky will fall on your head ?>
+
+</div>
